@@ -56,11 +56,16 @@ bodyBod = do
   el "h1" $ text "Details"
   elAttr "div" [("class", "details")] do
     _name <- inputWidget "Name"
+    _concept <- inputWidget "Concept"
     _player <- inputWidget "Player"
     _chronicle <- inputWidget "Chronicle"
-    _concept <- inputWidget "Concept"
+
     _ambition <- inputWidget "Ambition"
+    _desire <- inputWidget "Desire"
+    _generation <- dropdownWidget (Proxy @Generation)
+
     _predator <- dropdownWidget (Proxy @Predator)
+    _clan <- dropdownWidget (Proxy @Clan)
     blank
   elAttr "div" [("class", "abilities")] do
     _strength <- dotWidget "Strength"
