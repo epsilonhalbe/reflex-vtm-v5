@@ -11,6 +11,7 @@ module Frontend where
 import Control.Monad.Fix (MonadFix)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text, pack)
+import Data.Bool (bool)
 -- import qualified Data.Text.Encoding as Tx
 import Obelisk.Frontend
 -- import Obelisk.Configs
@@ -27,16 +28,18 @@ frontend :: Frontend (R FrontendRoute)
 frontend = Frontend
   { _frontend_head = do
       el "title" (text "Vampire the Masquerade: V5 - Character Sheet")
-      elAttr "link" [("href", static @"mui-0.10.0/css/mui.css")
-                    ,("type","text/css")
-                    ,("rel","stylesheet")
-                    ] blank
-      elAttr "link" [("href", static @"custom.css")
-                    ,("type","text/css")
-                    ,("rel","stylesheet")
-                    ] blank
+      styleSheet (static @"mui-0.10.0/css/mui.css")
+      styleSheet (static @"fontawesome-free-5.12.0-web/css/all.css")
+      styleSheet (static @"custom.css")
+
   , _frontend_body = bodyBod
   }
+ where
+    styleSheet href =
+      elAttr "link" [("href", href)
+                    ,("type","text/css")
+                    ,("rel","stylesheet")
+                    ] blank
 
 bodyBod
   :: forall t m.
@@ -52,13 +55,16 @@ bodyBod = do
                 ] blank
   el "h1" $ text "Details"
   elAttr "div" [("class", "details")] do
-    name <- inputWidget "Name"
+    _name <- inputWidget "Name"
     _player <- inputWidget "Player"
     _chronicle <- inputWidget "Chronicle"
     _concept <- inputWidget "Concept"
     _ambition <- inputWidget "Ambition"
     _predator <- dropdownWidget (Proxy @Predator)
-    dynText name
+    blank
+  elAttr "div" [("class", "abilities")] do
+    _strength <- dotWidget "Strength"
+    blank
   blank
 
 inputWidget
@@ -66,7 +72,6 @@ inputWidget
   .  DomBuilder t m
   => Text
   -> m (Dynamic t Text)
-
 inputWidget name
   = fmap value
   $ elClass "div" "mui-textfield"
@@ -119,6 +124,39 @@ dropdownWidget _ =
         (e, _) <- elAttr' "a" ("href" =: "#") . text . pack $ show x
         pure $ domEvent Click e $> x
 
+dotWidget
+  :: forall t m
+  .  ( DomBuilder t m
+     , PostBuild t m
+     , MonadFix m
+     , MonadHold t m
+     )
+  => Text
+  -> m (Dynamic t Word)
+dotWidget name = el "div" $ mdo
+  el "span" $ text (name <> ":")
+  rangeWidget "fa-circle" 5
 
+rangeWidget
+  :: forall t m
+  .  ( DomBuilder t m
+     , PostBuild t m
+     , MonadFix m
+     , MonadHold t m
+     )
+  => Text -> Word
+  -> m (Dynamic t Word)
+rangeWidget faIcon maxdots = mdo
+  selected <- holdDyn 0 . leftmost =<< traverse (item selected) ([1 .. maxdots] :: [Word])
+  pure selected
+  where
+    item :: Dynamic t Word -> Word -> m (Event t Word)
+    item dyN n = do
+      let filled' = dyN <&> \n' -> bool "far" "fas" (n <= n') <> " " <> faIcon
+      (e,_) <- elDynClass' "i" filled' blank
+      pure $ (tag (current dyN) (domEvent Click e)) <&> \n' ->
+        if n == n'
+           then pred n
+           else n
 
 
