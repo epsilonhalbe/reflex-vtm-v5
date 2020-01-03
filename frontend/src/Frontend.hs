@@ -12,7 +12,7 @@ import Common.Route
 import Common.Types
 import Control.Monad.Fix (MonadFix)
 import Data.Proxy
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Frontend.Dropdown
 import Frontend.Range
 -- import Obelisk.Configs
@@ -116,5 +116,6 @@ dotWidget
   => Text
   -> m (Dynamic t Word)
 dotWidget name = el "mui-row" mdo
-  elClass "span" "mui-col-md-6" $ text (name <> ":")
-  elClass "span" "mui-col-md-6" $ rangeWidget "fa-circle" 5
+  elClass "span" "mui-col-md-6 mui--text-headline" $ dynText $ (\n -> name <> " (" <> pack (show n) <> "):") <$> val
+  val <- elClass "span" "mui-col-md-6  mui--text-headline mui--text-right" $ rangeWidget 5
+  pure val
