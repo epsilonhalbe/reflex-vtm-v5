@@ -8,6 +8,11 @@ import Obelisk.Backend
 
 backend :: Backend BackendRoute FrontendRoute
 backend = Backend
-  { _backend_run = \serve -> serve $ const $ return ()
+  { _backend_run = backend_run
   , _backend_routeEncoder = fullRouteEncoder
   }
+
+backend_run
+  :: Applicative m
+  => ((b -> m ()) -> t) -> t
+backend_run serve = serve $ const $ pure  ()

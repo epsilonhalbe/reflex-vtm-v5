@@ -1,6 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecursiveDo #-}
@@ -8,21 +7,20 @@
 {-# LANGUAGE TypeApplications #-}
 module Frontend where
 
-import Control.Monad.Fix (MonadFix)
-import Data.Functor (($>), (<&>))
-import Data.Text (Text, pack)
-import Data.Bool (bool)
--- import qualified Data.Text.Encoding as Tx
-import Obelisk.Frontend
--- import Obelisk.Configs
-import Obelisk.Route
-import Reflex.Dom.Core
-import Data.Proxy
-
 -- import Common.Api
 import Common.Route
 import Common.Types
+import Control.Monad.Fix (MonadFix)
+import Data.Proxy
+import Data.Text (Text)
+import Frontend.Dropdown
+import Frontend.Range
+-- import Obelisk.Configs
+import Obelisk.Frontend
 import Obelisk.Generated.Static
+import Obelisk.Route
+import Reflex.Dom.Core
+
 
 frontend :: Frontend (R FrontendRoute)
 frontend = Frontend
@@ -71,7 +69,7 @@ bodyBod = do
       elClass "div" "mui-col-md-4" do
         _clan <- dropdownWidget (Proxy @Clan)
         _generation <- dropdownWidget (Proxy @Generation)
-        _predator <- dropdownWidget (Proxy @Predator)
+        _predator <- dropdownWidget_v1 (Proxy @Predator)
         blank
     blank
   elClass "div" "mui-container-fluid" do
@@ -106,52 +104,7 @@ inputWidget name
   $ elClass "div" "mui-textfield"
   $ inputElement
   $ def & inputElementConfig_elementConfig
-        . elementConfig_initialAttributes .~ ("placeholder" =: name)
-
-dropdownWidget
-  :: forall t m a
-  . ( DomBuilder t m
-    , MonadHold t m
-    , PostBuild t m
-    , MonadFix m
-    , Bounded a
-    , Show a
-    , Enum a
-    )
-  => Proxy a -> m (Dynamic t (Maybe a))
-dropdownWidget _ =
-  elClass "div" "mui-dropdown block" $ mdo
-    ddClick <- dropdownButton selected
-    open <- clicked $ leftmost [ddClick $> Nothing, updated selected]
-    selected <-
-       elDynClass "ul" open $ holdDyn Nothing =<< selectItems
-    pure selected
-
-  where
-    selectItems :: m (Event t (Maybe a))
-    selectItems = fmap Just . leftmost <$> traverse li ([minBound .. maxBound] :: [a])
-
-    clicked :: Event t b -> m (Dynamic t Text)
-    clicked click = do
-      opn <- (foldDyn (const not) False click)
-      pure $ opn
-       <&> ("mui-dropdown__menu fullwidth" <>)
-        . \case True  -> " mui--is-open"
-                False -> ""
-
-    dropdownButton :: Dynamic t (Maybe a) -> m (Event t ())
-    dropdownButton mCurrentElement = do
-      (e,_) <- elAttr' "button"
-        [("class", "mui-btn mui-btn--large mui-btn--primary block")
-        ,("data-mui-toggle", "dropdown")
-        ] $ dynText $ maybe "(select)" (pack . show) <$> mCurrentElement
-      pure $ domEvent Click e
-
-    li :: a -> m (Event t a)
-    li x =
-      el "li" do
-        (e, _) <- elAttr' "a" ("href" =: "#") . text . pack $ show x
-        pure $ domEvent Click e $> x
+        . elementConfig_initialAttributes .~ [("placeholder", name)]
 
 dotWidget
   :: forall t m
@@ -165,27 +118,3 @@ dotWidget
 dotWidget name = el "mui-row" mdo
   elClass "span" "mui-col-md-6" $ text (name <> ":")
   elClass "span" "mui-col-md-6" $ rangeWidget "fa-circle" 5
-
-rangeWidget
-  :: forall t m
-  .  ( DomBuilder t m
-     , PostBuild t m
-     , MonadFix m
-     , MonadHold t m
-     )
-  => Text -> Word
-  -> m (Dynamic t Word)
-rangeWidget faIcon maxdots = mdo
-  selected <- holdDyn 0 . leftmost =<< traverse (item selected) ([1 .. maxdots] :: [Word])
-  pure selected
-  where
-    item :: Dynamic t Word -> Word -> m (Event t Word)
-    item dyN n = do
-      let filled' = dyN <&> \n' -> bool "far" "fas" (n <= n') <> " " <> faIcon
-      (e,_) <- elDynClass' "i" filled' blank
-      pure $ (tag (current dyN) (domEvent Click e)) <&> \n' ->
-        if n == n'
-           then pred n
-           else n
-
-
