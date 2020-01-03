@@ -15,6 +15,11 @@ body {
   width: 50%;
 }
 
-.details {
-  display: flex;
+.block {
+  display: block;
+  width: 100%
+}
+
+.fullwidth {
+  width: 100%
 }

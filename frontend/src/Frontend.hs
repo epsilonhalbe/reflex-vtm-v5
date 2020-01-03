@@ -53,23 +53,47 @@ bodyBod = do
                 ,("alt", "vampire the masquerade logo")
                 ,("class", "logo")
                 ] blank
-  el "h1" $ text "Details"
-  elAttr "div" [("class", "details")] do
-    _name <- inputWidget "Name"
-    _concept <- inputWidget "Concept"
-    _player <- inputWidget "Player"
-    _chronicle <- inputWidget "Chronicle"
+  elClass "div" "mui-container-fluid" do
+    el "h1" $ text "Details"
+    elClass "div" "mui-row" do
+      elClass "div" "mui-col-md-4" do
+        _name <- inputWidget "Name"
+        _concept <- inputWidget "Concept"
+        _chronicle <- inputWidget "Chronicle"
+        blank
 
-    _ambition <- inputWidget "Ambition"
-    _desire <- inputWidget "Desire"
-    _generation <- dropdownWidget (Proxy @Generation)
+      elClass "div" "mui-col-md-4" do
+        _ambition <- inputWidget "Ambition"
+        _desire <- inputWidget "Desire"
+        _sire <- inputWidget "Sire"
+        blank
 
-    _predator <- dropdownWidget (Proxy @Predator)
-    _clan <- dropdownWidget (Proxy @Clan)
+      elClass "div" "mui-col-md-4" do
+        _clan <- dropdownWidget (Proxy @Clan)
+        _generation <- dropdownWidget (Proxy @Generation)
+        _predator <- dropdownWidget (Proxy @Predator)
+        blank
     blank
-  elAttr "div" [("class", "abilities")] do
-    _strength <- dotWidget "Strength"
-    blank
+  elClass "div" "mui-container-fluid" do
+    elClass "div" "mui-row" do
+      elClass "div" "mui-col-md-4" do
+        el "h2" $ text "Physical"
+        _strength <- dotWidget "Strength"
+        _dexterity <- dotWidget "Dexterity"
+        _stamina <- dotWidget "Stamina"
+        blank
+      elClass "div" "mui-col-md-4" do
+        el "h2" $ text "Social"
+        _charisma <- dotWidget "Charisma"
+        _manipulation <- dotWidget "Manipulation"
+        _composure <- dotWidget "Composure"
+        blank
+      elClass "div" "mui-col-md-4" do
+        el "h2" $ text "Mental"
+        _intelligence <- dotWidget "Intelligence"
+        _wits <- dotWidget "Wits"
+        _resolve <- dotWidget "Resolve"
+        blank
   blank
 
 inputWidget
@@ -96,7 +120,7 @@ dropdownWidget
     )
   => Proxy a -> m (Dynamic t (Maybe a))
 dropdownWidget _ =
-  elClass "div" "mui-dropdown" $ mdo
+  elClass "div" "mui-dropdown block" $ mdo
     ddClick <- dropdownButton selected
     open <- clicked $ leftmost [ddClick $> Nothing, updated selected]
     selected <-
@@ -111,14 +135,14 @@ dropdownWidget _ =
     clicked click = do
       opn <- (foldDyn (const not) False click)
       pure $ opn
-       <&> ("mui-dropdown__menu" <>)
+       <&> ("mui-dropdown__menu fullwidth" <>)
         . \case True  -> " mui--is-open"
                 False -> ""
 
     dropdownButton :: Dynamic t (Maybe a) -> m (Event t ())
     dropdownButton mCurrentElement = do
       (e,_) <- elAttr' "button"
-        [("class", "mui-btn mui-btn--primary")
+        [("class", "mui-btn mui-btn--large mui-btn--primary block")
         ,("data-mui-toggle", "dropdown")
         ] $ dynText $ maybe "(select)" (pack . show) <$> mCurrentElement
       pure $ domEvent Click e
@@ -138,9 +162,9 @@ dotWidget
      )
   => Text
   -> m (Dynamic t Word)
-dotWidget name = el "div" $ mdo
-  el "span" $ text (name <> ":")
-  rangeWidget "fa-circle" 5
+dotWidget name = el "mui-row" mdo
+  elClass "span" "mui-col-md-6" $ text (name <> ":")
+  elClass "span" "mui-col-md-6" $ rangeWidget "fa-circle" 5
 
 rangeWidget
   :: forall t m
