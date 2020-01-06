@@ -24,7 +24,7 @@ app = elClass "div" "app" mdo
   el "br" blank
   dynText (txt2 <&> ("Test: " <>))
 
-  el "h1" $ text "Prototype"
+  el "h1" $ text "Input Widget"
   dynText (txt <&> ("Test: " <>))
   txt <- inputWidget "Test"
   blank

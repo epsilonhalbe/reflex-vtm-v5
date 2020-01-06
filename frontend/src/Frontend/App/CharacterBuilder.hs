@@ -43,7 +43,7 @@ app = elClass "div" "app" do
       elClass "div" "mui-col-md-4" do
         _clan <- dropdownWidget (Proxy @Clan)
         _generation <- dropdownWidget (Proxy @Generation)
-        _predator <- dropdownWidget_v1 (Proxy @Predator)
+        _predator <- dropdownWidget (Proxy @Predator)
         blank
     blank
   elClass "div" "mui-container-fluid" do
@@ -79,6 +79,8 @@ dotWidget
   => Text
   -> m (Dynamic t Word)
 dotWidget name = el "mui-row" mdo
-  elClass "span" "mui-col-md-6 mui--text-headline" $ dynText $ (\n -> name <> " (" <> pack (show n) <> "):") <$> val
-  val <- elClass "span" "mui-col-md-6  mui--text-headline mui--text-right" $ rangeWidget 5
+  elClass "span" "mui-col-md-6 mui--text-headline" $
+    dynText $ (\n -> name <> " (" <> pack (show n) <> "):") <$> val
+  val <- elClass "span" "mui-col-md-6  mui--text-headline mui--text-right" $
+            rangeWidget 5
   pure val
