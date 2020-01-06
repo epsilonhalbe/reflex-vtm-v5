@@ -3,10 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Common.Route where
 
@@ -17,36 +14,51 @@ import Control.Category
 
 import Data.Text (Text)
 import Data.Functor.Identity
+import Data.Some (Some(..))
 
 import Obelisk.Route
 import Obelisk.Route.TH
 
 data BackendRoute :: * -> * where
-  -- | Used to handle unparseable routes.
-  BackendRoute_Missing         :: BackendRoute ()
-  BackendRoute_CreateCharacter :: BackendRoute ()
-  -- You can define any routes that will be handled specially by the backend here.
-  -- i.e. These do not serve the frontend, but do something different, such as
-  -- serving static files.
+  BackendRoute_Missing :: BackendRoute ()
 
 data FrontendRoute :: * -> * where
-  FrontendRoute_Main :: FrontendRoute ()
-  -- This type is used to define frontend routes, i.e. ones for which the
-  -- backend will serve the frontend.
+  HomeR :: FrontendRoute ()
+  ExampleR :: FrontendRoute (Maybe (R Example))
 
-fullRouteEncoder
+data Example :: * -> * where
+  SimpleTextInput :: Example ()
+  Dropdown :: Example ()
+  DotInput :: Example ()
+  CharacterBuilder :: Example ()
+
+routeEncoder
   :: Encoder (Either Text) Identity (R (FullRoute BackendRoute FrontendRoute)) PageName
-fullRouteEncoder = mkFullRouteEncoder
+routeEncoder = mkFullRouteEncoder
   (FullRoute_Backend BackendRoute_Missing :/ ())
   (\case
       BackendRoute_Missing -> PathSegment "missing" $ unitEncoder mempty
-      BackendRoute_CreateCharacter -> PathSegment "v5" $ unitEncoder mempty
   )
   (\case
-      FrontendRoute_Main -> PathEnd $ unitEncoder mempty
+      HomeR    -> PathEnd (unitEncoder mempty)
+      ExampleR -> PathSegment "example" $ maybeEncoder (unitEncoder mempty) $
+         pathComponentEncoder \case
+            SimpleTextInput   -> PathSegment "simple-text-input" $ unitEncoder mempty
+            Dropdown          -> PathSegment "dropdown" $ unitEncoder mempty
+            DotInput          -> PathSegment "dot-input" $ unitEncoder mempty
+            CharacterBuilder -> PathSegment "vtm" $ unitEncoder mempty
   )
+
+sectionHomepage :: Some Example -> R Example
+sectionHomepage (Some sec) = sec :/ case sec of
+  SimpleTextInput -> ()
+  Dropdown -> ()
+  DotInput -> ()
+  CharacterBuilder  -> ()
+
 
 concat <$> mapM deriveRouteComponent
   [ ''BackendRoute
   , ''FrontendRoute
+  , ''Example
   ]

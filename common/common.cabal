@@ -10,8 +10,9 @@ library
                , mtl
                , text
   default-extensions:
-    TypeFamilies
+    LambdaCase
     PolyKinds
+    TypeFamilies
   exposed-modules:
     Common.Api
     Common.Route

@@ -15,9 +15,14 @@ library
                , text
   exposed-modules:
     Frontend
-    Frontend.Range
-    Frontend.Dropdown
   ghc-options: -Wall
+  default-extensions:
+    BlockArguments
+    DataKinds
+    LambdaCase
+    OverloadedStrings
+    ScopedTypeVariables
+    TypeApplications
 
 executable frontend
   main-is: main.hs

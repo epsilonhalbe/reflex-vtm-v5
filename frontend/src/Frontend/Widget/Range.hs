@@ -1,19 +1,33 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecursiveDo #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-module Frontend.Range where
+module Frontend.Widget.Range where
 
+import Control.Monad (void)
 import Control.Monad.Fix (MonadFix)
 import Data.Functor (($>), (<&>))
 import Data.Bool (bool)
 import Reflex.Dom.Core
 
 -- import Common.Api
+
+app
+  :: forall t m.
+  ( DomBuilder t m
+  , PostBuild t m
+  , MonadHold t m
+  , MonadFix m
+  ) => m ()
+app = elClass "div" "app" do
+  text "Prototype 1"
+  void $ rangeWidget_v1 5
+  el "br" blank
+  text "Prototype 2"
+  void $ rangeWidget_v2 5
+  el "br" blank
+  text "Test Range Widget"
+  void $ rangeWidget 5
+  blank
+
 
 rangeWidget
   :: forall t m
@@ -58,6 +72,17 @@ rangeWidget_v1 maxdots = mdo
           =<< traverse (item_v4 selected) ([1 .. maxdots] :: [Word])
   pure selected
 
+item_v1
+  :: forall t m
+  .  ( DomBuilder t m
+     , PostBuild t m
+     )
+  => Dynamic t Word -> Word -> m (Event t Word)
+item_v1 dyN n = do
+  let filled = dyN <&> \n' -> bool "far" "fas" (n <= n') <> " fa-circle"
+  (e,_) <- elDynClass' "i" filled blank
+  pure $ domEvent Click e $> n
+
 item_v2
   :: forall t m
   .  ( DomBuilder t m
@@ -69,17 +94,6 @@ item_v2 dyN n = do
   (e,_) <- elDynClass' "i" filled blank
   pure $ (tag (current dyN) (domEvent Click e)) <&> \n' ->
     if n == n' then pred n else n
-
-item_v1
-  :: forall t m
-  .  ( DomBuilder t m
-     , PostBuild t m
-     )
-  => Dynamic t Word -> Word -> m (Event t Word)
-item_v1 dyN n = do
-  let filled = dyN <&> \n' -> bool "far" "fas" (n <= n') <> " fa-circle"
-  (e,_) <- elDynClass' "i" filled blank
-  pure $ domEvent Click e $> n
 
 item_v3
   :: forall t m

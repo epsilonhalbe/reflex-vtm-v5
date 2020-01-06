@@ -1,4 +1,4 @@
-body {
+.app {
   width: 90%;
   margin: auto;
   background: #EEE;
@@ -15,6 +15,10 @@ body {
   width: 50%;
 }
 
+header img.habito {
+  cursor: pointer;
+}
+
 .block {
   display: block;
   width: 100%
@@ -22,4 +26,9 @@ body {
 
 .fullwidth {
   width: 100%
+}
+
+.dropdown-link {
+  cursor: pointer;
+  user-select: none;
 }

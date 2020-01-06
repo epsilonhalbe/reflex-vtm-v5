@@ -1,20 +1,33 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecursiveDo #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-module Frontend.Dropdown where
+module Frontend.Widget.Dropdown where
 
 
+import Control.Monad (void)
 import Control.Monad.Fix (MonadFix)
 import Data.Bool (bool)
 import Data.Functor (($>))
 import Data.Proxy
 import Data.Text (Text, pack)
 import Reflex.Dom.Core
+
+
+app
+ :: forall t m
+ . ( DomBuilder t m
+   , MonadHold t m
+   , PostBuild t m
+   , MonadFix m
+   )
+ => m ()
+app =
+  elClass "div" "app" do
+    el "h1" $ text "Prototype"
+    void $ dropdownWidget_v1 (Proxy @Bool)
+    el "h1" $ text "Dropdown"
+    void $ dropdownWidget (Proxy @Bool)
+    blank
+
 
 dropdownWidget
  :: forall t m a
@@ -67,7 +80,7 @@ li
   => a -> m (Event t a)
 li x =
   el "li" do
-    (e, _) <- elAttr' "a" [("href", "#")] . text . pack $ show x
+    (e, _) <- elClass' "a" "dropdown-link" $ text . pack $ show x
     pure $ domEvent Click e $> x
 
 
