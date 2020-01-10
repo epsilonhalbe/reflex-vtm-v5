@@ -24,6 +24,7 @@ app =
   elClass "div" "app" do
     el "h1" $ text "Prototype"
     void $ dropdownWidget_v1 (Proxy @Bool)
+    el "br" blank
     el "h1" $ text "Dropdown"
     void $ dropdownWidget (Proxy @Bool)
     blank
@@ -67,9 +68,8 @@ dropdownButton
      )
   => Dynamic t (Maybe a) -> m (Event t ())
 dropdownButton mCurrentElement = do
-  (e,_) <- elAttr' "button"
-    [("class", "mui-btn mui-btn--large mui-btn--primary block")
-    ] $ dynText $ maybe "(select)" (pack . show) <$> mCurrentElement
+  (e,_) <- elClass' "button" "mui-btn mui-btn--large mui-btn--primary block"
+            $ dynText $ maybe "(select)" (pack . show) <$> mCurrentElement
   pure $ domEvent Click e
 
 li
