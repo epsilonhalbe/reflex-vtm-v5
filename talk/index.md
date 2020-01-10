@@ -337,7 +337,27 @@ clicked click
  <$> foldDyn (const not) False click
      ^^^^^^^
 ```
+## to get Prototype I
 
+```{.haskell}
+dropdownWidget_v1 prx =
+  elClass "div" "mui-dropdown" $ mdo
+    ddClick <- dropdownButton selected
+    open <- clicked (ddClick $> Nothing)
+    selected <- elDynClass "ul" open $ holdDyn Nothing =<< selectItems prx
+    pure selected
+```
+
+## and finally
+
+```{.haskell}
+dropdownWidget prx =
+  elClass "div" "mui-dropdown block" $ mdo
+    ddClick <- dropdownButton selected
+    open <- clicked $ leftmost [ddClick $> Nothing, updated selected]
+    selected <- elDynClass "ul" open $ holdDyn Nothing =<< selectItems prx
+    pure selected
+```
 
 
 
