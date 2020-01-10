@@ -1,4 +1,5 @@
 {-# LANGUAGE EmptyCase #-}
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}

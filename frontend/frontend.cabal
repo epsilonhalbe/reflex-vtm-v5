@@ -7,14 +7,21 @@ library
   hs-source-dirs: src
   build-depends: base
                , common
+               , obelisk-executable-config-lookup
                , obelisk-frontend
+               , obelisk-generated-static
                , obelisk-route
                , reflex-dom
-               , obelisk-executable-config-lookup
-               , obelisk-generated-static
                , text
+               , universe
   exposed-modules:
     Frontend
+    Frontend.Nav
+    Frontend.Home
+    Frontend.App.CharacterBuilder
+    Frontend.Widget.Dropdown
+    Frontend.Widget.Range
+    Frontend.Widget.SimpleTextInput
   ghc-options: -Wall
   default-extensions:
     BlockArguments
@@ -23,6 +30,7 @@ library
     OverloadedStrings
     ScopedTypeVariables
     TypeApplications
+    TypeFamilies
 
 executable frontend
   main-is: main.hs

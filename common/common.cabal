@@ -7,12 +7,14 @@ library
   hs-source-dirs: src
   build-depends: base
                , obelisk-route
+               , dependent-sum
                , mtl
                , text
   default-extensions:
     LambdaCase
     PolyKinds
     TypeFamilies
+    OverloadedStrings
   exposed-modules:
     Common.Api
     Common.Route
