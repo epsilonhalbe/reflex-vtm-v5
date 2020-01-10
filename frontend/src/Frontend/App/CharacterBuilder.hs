@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE RecordWildCards #-}
 module Frontend.App.CharacterBuilder where
 
 import Common.Types
+import Control.Monad (void)
 import Control.Monad.Fix (MonadFix)
 import Data.Proxy
 import Data.Text (Text, pack)
@@ -25,47 +27,72 @@ app = elClass "div" "app" do
                 ,("alt", "vampire the masquerade logo")
                 ,("class", "logo")
                 ] blank
-  elClass "div" "mui-container-fluid" do
+  _details <- elClass "div" "mui-container-fluid" do
     el "h1" $ text "Details"
     elClass "div" "mui-row" do
-      elClass "div" "mui-col-md-4" do
-        _name <- inputWidget "Name"
-        _concept <- inputWidget "Concept"
-        _chronicle <- inputWidget "Chronicle"
-        blank
+      (_name, _concept, _chronicle) <-
+        elClass "div" "mui-col-md-4" $ (,,)
+          <$> inputWidget "Name"
+          <*> inputWidget "Concept"
+          <*> inputWidget "Chronicle"
 
-      elClass "div" "mui-col-md-4" do
-        _ambition <- inputWidget "Ambition"
-        _desire <- inputWidget "Desire"
-        _sire <- inputWidget "Sire"
-        blank
+      (_ambition, _desire, _sire) <-
+        elClass "div" "mui-col-md-4" $ (,,)
+          <$> inputWidget "Ambition"
+          <*> inputWidget "Desire"
+          <*> inputWidget "Sire"
 
-      elClass "div" "mui-col-md-4" do
-        _clan <- dropdownWidget (Proxy @Clan)
-        _generation <- dropdownWidget (Proxy @Generation)
-        _predator <- dropdownWidget (Proxy @Predator)
-        blank
-    blank
-  elClass "div" "mui-container-fluid" do
+      (_clan, _generation, _predator) <-
+        elClass "div" "mui-col-md-4" $ (,,)
+          <$> dropdownWidget (Proxy @Clan)
+          <*> dropdownWidget (Proxy @Generation)
+          <*> dropdownWidget (Proxy @Predator)
+
+      pure $ Details
+        <$> _name
+        <*> _concept
+        <*> _chronicle
+        <*> _ambition
+        <*> _desire
+        <*> _sire
+        <*> _clan
+        <*> _generation
+        <*> _predator
+  _attributes <- elClass "div" "mui-container-fluid" do
     elClass "div" "mui-row" do
-      elClass "div" "mui-col-md-4" do
-        el "h2" $ text "Physical"
-        _strength <- dotWidget "Strength"
-        _dexterity <- dotWidget "Dexterity"
-        _stamina <- dotWidget "Stamina"
-        blank
-      elClass "div" "mui-col-md-4" do
-        el "h2" $ text "Social"
-        _charisma <- dotWidget "Charisma"
-        _manipulation <- dotWidget "Manipulation"
-        _composure <- dotWidget "Composure"
-        blank
-      elClass "div" "mui-col-md-4" do
-        el "h2" $ text "Mental"
-        _intelligence <- dotWidget "Intelligence"
-        _wits <- dotWidget "Wits"
-        _resolve <- dotWidget "Resolve"
-        blank
+      (_strength, _dexterity, _stamina) <-
+        elClass "div" "mui-col-md-4" do
+          el "h2" $ text "Physical"
+          (,,)
+            <$> dotWidget "Strength"
+            <*> dotWidget "Dexterity"
+            <*> dotWidget "Stamina"
+      (_charisma, _manipulation, _composure) <-
+        elClass "div" "mui-col-md-4" do
+          el "h2" $ text "Social"
+          (,,)
+            <$> dotWidget "Charisma"
+            <*> dotWidget "Manipulation"
+            <*> dotWidget "Composure"
+      (_intelligence, _wits, _resolve) <-
+        elClass "div" "mui-col-md-4" do
+          el "h2" $ text "Mental"
+          (,,)
+            <$> dotWidget "Intelligence"
+            <*> dotWidget "Wits"
+            <*> dotWidget "Resolve"
+      pure $ Attributes
+          <$> _strength
+          <*> _dexterity
+          <*> _stamina
+          <*> _charisma
+          <*> _manipulation
+          <*> _composure
+          <*> _intelligence
+          <*> _wits
+          <*> _resolve
+  (e, _) <- elClass' "div" "mui-btn" $ text "save"
+  let char = Character <$> _details <*> _attributes
   blank
 
 

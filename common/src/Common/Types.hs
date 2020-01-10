@@ -1,8 +1,10 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DeriveAnyClass #-}
 module Common.Types where
 
 import GHC.Generics (Generic)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 
 data Predator
@@ -16,7 +18,8 @@ data Predator
  | Sandman
  | SceneQueen
  | Siren
- deriving (Enum, Bounded)
+ deriving stock (Enum, Bounded, Generic)
+ deriving anyclass (FromJSON, ToJSON)
 
 instance Show Predator where
  show Alleycat      = "Alleycat"
@@ -42,7 +45,8 @@ data Clan
  | Toreador
  | Tremere
  | Ventrue
- deriving (Enum, Bounded)
+ deriving (Enum, Bounded, Generic)
+ deriving anyclass (FromJSON, ToJSON)
 
 instance Show Clan where
   show BanuHaqim   = "Banu Haqim"
@@ -73,8 +77,8 @@ data Generation
  | ThirteenthGen
  | FourteenthGen
  | FifteenthGen
- deriving (Enum, Bounded)
-
+ deriving (Enum, Bounded, Generic)
+ deriving anyclass (FromJSON, ToJSON)
 
 instance Show Generation where
  show Caine         = "Caine"
@@ -98,6 +102,7 @@ data Character = Character
  , _attributes :: Attributes
  }
  deriving stock (Generic)
+ deriving anyclass (FromJSON, ToJSON)
 
 data Details = Details
  { _name       :: Text
@@ -111,6 +116,7 @@ data Details = Details
  , _predator   :: Predator
  }
  deriving stock (Generic)
+ deriving anyclass (FromJSON, ToJSON)
 
 data Attributes = Attributes
  { _strength     :: Word
@@ -123,4 +129,6 @@ data Attributes = Attributes
  , _wits         :: Word
  , _resolve      :: Word
  }
+ deriving stock (Generic)
+ deriving anyclass (FromJSON, ToJSON)
 

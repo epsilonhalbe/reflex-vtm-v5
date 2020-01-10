@@ -13,4 +13,8 @@ project ./. ({ ... }: {
   android.displayName = "Obelisk Minimal Example";
   ios.bundleIdentifier = "systems.obsidian.obelisk.examples.minimal";
   ios.bundleName = "Obelisk Minimal Example";
+  overrides = self: super: {
+    reflex-dom-storage =
+        super.callCabal2nix "reflex-dom-storage" ../reflex-dom-storage {};
+  };
 })

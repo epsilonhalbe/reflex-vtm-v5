@@ -7,6 +7,8 @@ library
   hs-source-dirs: src
   build-depends: base
                , common
+               , aeson
+               , jsaddle-dom
                , obelisk-executable-config-lookup
                , obelisk-frontend
                , obelisk-generated-static
@@ -37,11 +39,11 @@ executable frontend
   hs-source-dirs: src-bin
   build-depends: base
                , common
+               , frontend
                , obelisk-frontend
+               , obelisk-generated-static
                , obelisk-route
                , reflex-dom
-               , obelisk-generated-static
-               , frontend
   --TODO: Make these ghc-options optional
   ghc-options: -threaded
   if os(darwin)
