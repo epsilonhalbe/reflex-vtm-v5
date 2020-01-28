@@ -23,14 +23,12 @@ nav
   => m ()
 nav = do
   elClass "div" "mui-appbar" do
-    elAttr "table" [("width", "100%")] do
-      elClass "tr" "middle" do
-        routeLink (HomeR :/ ()) do
-          elClass "span" "mui--appbar-height mui--text-dark" $ text "Home"
-          elClass "div" "mui--appbar-height" do
-            elAttr "img" [ ("class", "mui--appbar-height")
-                         , ("src", static @"MalkavianV5.webp")
-                         , ("alt", "Home")
-                         ] blank
+    routeLink (HomeR :/ ()) do
+      elClass "span" "mui--appbar-height mui--text-dark" $ text "Home"
+      elClass "div" "mui--appbar-height" do
+        elAttr "img" [ ("class", "mui--appbar-height")
+                      , ("src", static @"MalkavianV5.webp")
+                      , ("alt", "Home")
+                      ] blank
 
 

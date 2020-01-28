@@ -42,10 +42,13 @@ dropdownWidget
    )
  => Proxy a -> m (Dynamic t (Maybe a))
 dropdownWidget prx =
-  elClass "div" "mui-dropdown block" $ mdo
-    selected <- elDynClass "ul" open $ holdDyn Nothing =<< selectItems prx
-    ddClick <- dropdownButton selected
+  elAttr "div"
+      [("class", "mui-dropdown block")
+      ,("required", "")
+      ] mdo
     open <- clicked $ leftmost [ddClick $> Nothing, updated selected]
+    ddClick <- dropdownButton selected
+    selected <- elDynClass "ul" open $ holdDyn Nothing =<< selectItems prx
     pure selected
 
 selectItems

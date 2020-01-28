@@ -37,7 +37,10 @@ inputWidget
   -> m (Dynamic t Text)
 inputWidget name
   = fmap value
-  $ elClass "div" "mui-textfield"
+  $ elAttr "div"
+      [("class","mui-textfield")
+      ,("required","")
+      ]
   $ inputElement
   $ def & inputElementConfig_elementConfig
         . elementConfig_initialAttributes .~ [("placeholder", name)]
