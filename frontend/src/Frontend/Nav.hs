@@ -30,5 +30,3 @@ nav = do
                       , ("src", static @"MalkavianV5.webp")
                       , ("alt", "Home")
                       ] blank
-
-

@@ -2,33 +2,12 @@
 {-# LANGUAGE RecursiveDo #-}
 module Frontend.Widget.Dropdown where
 
-
-import Control.Monad (void)
 import Control.Monad.Fix (MonadFix)
 import Data.Bool (bool)
 import Data.Functor (($>))
-import Data.Proxy
+import Data.Proxy (Proxy)
 import Data.Text (Text, pack)
 import Reflex.Dom.Core
-
-
-app
- :: forall t m
- . ( DomBuilder t m
-   , MonadHold t m
-   , PostBuild t m
-   , MonadFix m
-   )
- => m ()
-app =
-  elClass "div" "app" do
-    el "h1" $ text "Prototype"
-    void $ dropdownWidget_v1 (Proxy @Bool)
-    el "br" blank
-    el "h1" $ text "Dropdown"
-    void $ dropdownWidget (Proxy @Bool)
-    blank
-
 
 dropdownWidget
  :: forall t m a
@@ -60,8 +39,8 @@ selectItems
     )
   => Proxy a -> m (Event t (Maybe a))
 selectItems _
-  = fmap Just . leftmost <$> traverse li ([minBound .. maxBound] :: [a])
-
+  =   fmap Just . leftmost
+  <$> traverse dropdownLi ([minBound .. maxBound] :: [a])
 
 dropdownButton
   :: forall a m t
@@ -75,13 +54,13 @@ dropdownButton mCurrentElement = do
             $ dynText $ maybe "(select)" (pack . show) <$> mCurrentElement
   pure $ domEvent Click e
 
-li
+dropdownLi
   :: forall a m t
   .  ( DomBuilder t m
      , Show a
      )
   => a -> m (Event t a)
-li x =
+dropdownLi x =
   el "li" do
     (e, _) <- elClass' "a" "dropdown-link" $ text . pack $ show x
     pure $ domEvent Click e $> x
@@ -97,22 +76,3 @@ clicked
 clicked click
   =  fmap (("mui-dropdown__menu fullwidth" <>) . bool "" " mui--is-open")
  <$> foldDyn (const not) False click
-
-dropdownWidget_v1
-  :: forall t m a
-  . ( DomBuilder t m
-    , MonadHold t m
-    , PostBuild t m
-    , MonadFix m
-    , Bounded a
-    , Show a
-    , Enum a
-    )
-  => Proxy a -> m (Dynamic t (Maybe a))
-dropdownWidget_v1 prx =
-  elClass "div" "mui-dropdown" $ mdo
-    ddClick <- dropdownButton selected
-    open <- clicked (ddClick $> Nothing)
-    selected <- elDynClass "ul" open $ holdDyn Nothing =<< selectItems prx
-    pure selected
-

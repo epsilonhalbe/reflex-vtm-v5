@@ -90,10 +90,10 @@ app = void $ prerender blank $ elClass "div" "app" do
           <*> _resolve
   storage <- getLocalStorage
   -- let char = Character <$> _details <*> _attributes
-  _delete :: () <- do
+  do
     (e, _) <- elClass' "div" "mui-btn" $ text "remove"
     performEvent_ (domEvent Click e $> (removeItem storage "blip"))
-  _store :: () <- do
+  do
     (e, _) <- elClass' "div" "mui-btn" $ text "save"
     performEvent_ (domEvent Click e $> (setItem storage "blip" ([("blap", "blup")] :: Map Text Text)))
   blank

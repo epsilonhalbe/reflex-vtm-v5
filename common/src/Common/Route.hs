@@ -28,9 +28,6 @@ data FrontendRoute :: * -> * where
   ExampleR :: FrontendRoute (Maybe (R Example))
 
 data Example :: * -> * where
-  SimpleTextInput :: Example ()
-  Dropdown :: Example ()
-  DotInput :: Example ()
   CharacterBuilder :: Example ()
 
 routeEncoder
@@ -44,17 +41,11 @@ routeEncoder = mkFullRouteEncoder
       HomeR    -> PathEnd (unitEncoder mempty)
       ExampleR -> PathSegment "example" $ maybeEncoder (unitEncoder mempty) $
          pathComponentEncoder \case
-            SimpleTextInput   -> PathSegment "simple-text-input" $ unitEncoder mempty
-            Dropdown          -> PathSegment "dropdown" $ unitEncoder mempty
-            DotInput          -> PathSegment "dot-input" $ unitEncoder mempty
             CharacterBuilder -> PathSegment "vtm" $ unitEncoder mempty
   )
 
 sectionHomepage :: Some Example -> R Example
 sectionHomepage (Some sec) = sec :/ case sec of
-  SimpleTextInput -> ()
-  Dropdown -> ()
-  DotInput -> ()
   CharacterBuilder  -> ()
 
 

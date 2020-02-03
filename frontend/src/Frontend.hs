@@ -16,9 +16,6 @@ import Reflex.Dom.Core
 import Frontend.Home (home)
 import Frontend.Nav (nav)
 import Frontend.App.CharacterBuilder as CharacterBuilder (app)
-import qualified Frontend.Widget.Dropdown as Dropdown
-import qualified Frontend.Widget.Range as Range
-import qualified Frontend.Widget.SimpleTextInput as SimpleTextInput
 
 frontend :: Frontend (R FrontendRoute)
 frontend = Frontend
@@ -55,7 +52,6 @@ frontend_body = do
 examples
   :: forall js m t str.
      ( DomBuilder t m
-     , PostBuild t m
      , MonadFix m
      , MonadHold t m
      , Prerender js t m
@@ -64,7 +60,4 @@ examples
   -> Dynamic t (R Example)
   -> RoutedT t (R Example) m ()
 examples _route _ = subRoute_ $ \case
-  Route.SimpleTextInput -> SimpleTextInput.app
-  Route.Dropdown -> Dropdown.app
-  Route.DotInput -> Range.app
   Route.CharacterBuilder -> CharacterBuilder.app
