@@ -8,6 +8,7 @@ library
   build-depends: base
                , obelisk-route
                , dependent-sum
+               , higgledy
                , mtl
                , text
   default-extensions:

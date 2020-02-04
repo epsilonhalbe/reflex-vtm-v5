@@ -78,16 +78,16 @@ app = void $ prerender blank $ elClass "div" "app" do
             <$> dotWidget "Intelligence"
             <*> dotWidget "Wits"
             <*> dotWidget "Resolve"
-      pure $ Attributes
-          <$> _strength
-          <*> _dexterity
-          <*> _stamina
-          <*> _charisma
-          <*> _manipulation
-          <*> _composure
-          <*> _intelligence
-          <*> _wits
-          <*> _resolve
+      pure $ Attributes @Maybe
+          <$> (pure <$> _strength     )
+          <*> (pure <$> _dexterity    )
+          <*> (pure <$> _stamina      )
+          <*> (pure <$> _charisma     )
+          <*> (pure <$> _manipulation )
+          <*> (pure <$> _composure    )
+          <*> (pure <$> _intelligence )
+          <*> (pure <$> _wits         )
+          <*> (pure <$> _resolve      )
   storage <- getLocalStorage
   -- let char = Character <$> _details <*> _attributes
   do

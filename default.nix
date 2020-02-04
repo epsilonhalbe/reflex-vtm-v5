@@ -8,13 +8,18 @@
   }
 }:
 with obelisk;
-project ./. ({ ... }: {
+project ./. ({...}: {
   android.applicationId = "systems.obsidian.obelisk.examples.minimal";
   android.displayName = "Obelisk Minimal Example";
   ios.bundleIdentifier = "systems.obsidian.obelisk.examples.minimal";
   ios.bundleName = "Obelisk Minimal Example";
-  overrides = self: super: {
+  overrides = self: super:
+    let nixpkgs = import <nixpkgs> {};
+        higgledyPkg = nixpkgs.haskellPackages.higgledy;
+    in {
     reflex-dom-storage =
         super.callCabal2nix "reflex-dom-storage" ../reflex-dom-storage {};
+    # higgledy = self.callCabal2nix "higgledy";
+    higgledy = higgledyPkg;
   };
 })

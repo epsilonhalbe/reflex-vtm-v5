@@ -4,6 +4,7 @@
 module Common.Types where
 
 import GHC.Generics (Generic)
+import Data.Generic.HKD
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 
@@ -97,38 +98,38 @@ instance Show Generation where
  show FourteenthGen = "14th Gen"
  show FifteenthGen  = "15th Gen"
 
-data Character = Character
- { _details :: Details
- , _attributes :: Attributes
+data Character f = Character
+ { _details :: f (Details f)
+ , _attributes :: f (Attributes f)
  }
  deriving stock (Generic)
- deriving anyclass (FromJSON, ToJSON)
+ -- deriving anyclass (FromJSON, ToJSON)
 
-data Details = Details
- { _name       :: Text
- , _concept    :: Text
- , _chronicle  :: Text
- , _ambition   :: Text
- , _desire     :: Text
- , _sire       :: Text
- , _clan       :: Clan
- , _generation :: Generation
- , _predator   :: Predator
+data Details f = Details
+ { _name       :: f Text
+ , _concept    :: f Text
+ , _chronicle  :: f Text
+ , _ambition   :: f Text
+ , _desire     :: f Text
+ , _sire       :: f Text
+ , _clan       :: f Clan
+ , _generation :: f Generation
+ , _predator   :: f Predator
  }
  deriving stock (Generic)
- deriving anyclass (FromJSON, ToJSON)
+ -- deriving anyclass (FromJSON, ToJSON)
 
-data Attributes = Attributes
- { _strength     :: Word
- , _dexterity    :: Word
- , _stamina      :: Word
- , _charisma     :: Word
- , _manipulation :: Word
- , _composure    :: Word
- , _intelligence :: Word
- , _wits         :: Word
- , _resolve      :: Word
+data Attributes f = Attributes
+ { _strength     :: f Word
+ , _dexterity    :: f Word
+ , _stamina      :: f Word
+ , _charisma     :: f Word
+ , _manipulation :: f Word
+ , _composure    :: f Word
+ , _intelligence :: f Word
+ , _wits         :: f Word
+ , _resolve      :: f Word
  }
  deriving stock (Generic)
- deriving anyclass (FromJSON, ToJSON)
+ -- deriving anyclass (FromJSON, ToJSON)
 
